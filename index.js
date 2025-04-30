@@ -33,6 +33,7 @@ const allowedOrigins = [
   "http://localhost:5174",
   "http://192.168.127.155:5173",
   "http://10.40.2.35:5173",
+  "https://occ-info-sys.vercel.app"
 ];
 
 const corsOptions = {
