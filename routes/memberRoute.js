@@ -5,6 +5,7 @@ import {
   getAllMembers,
   getSUCMembers,
   updateMemberProfile,
+  deleteMember,
 } from "../controllers/memberController.js";
 import { authenticateToken } from "../middlewares/authenticateToken.js";
 
@@ -29,5 +30,6 @@ router.post(
 router.put("/get-suc-member", authenticateToken, getSUCMembers);
 router.get("/get-all-member", getAllMembers);
 router.post("/member-update", authenticateToken, updateMemberProfile);
+router.post("/delete-member", authenticateToken, deleteMember);
 
 export default router;

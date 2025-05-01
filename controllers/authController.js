@@ -23,7 +23,10 @@ export const login = async (req, res) => {
     const memberDetails = await Members.findOne({ _id: user.member_id });
 
     // Generate JWT tokens
-    const accessToken = generateAccessToken(user._id);
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      role: user.role,
+    });
     const refreshToken = generateRefreshToken(user._id);
 
     res.status(200).send({

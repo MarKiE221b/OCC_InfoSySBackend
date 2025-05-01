@@ -98,3 +98,19 @@ export const updateMemberProfile = async (req, res) => {
     res.status(500).json({ message: "Error updating item", error });
   }
 };
+
+export const deleteMember = async (req, res) => {
+  const { _id } = req.body;
+
+  try {
+    const deletedMember = await Members.findByIdAndDelete(_id);
+
+    if (!deletedMember) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    res.status(200).json({ message: "Member deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting member", error: error.message });
+  }
+};
