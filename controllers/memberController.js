@@ -10,6 +10,8 @@ export const addMembers = async (req, res) => {
     durationOfTerm,
     expirationOfTerm,
     remarks,
+    email,
+    phoneNumber,
   } = req.body;
 
   try {
@@ -28,6 +30,8 @@ export const addMembers = async (req, res) => {
       status: "Active", // Default active status
       remarks,
       imagePath: image, // Store the image path
+      email,
+      phoneNumber,
     });
 
     // Save the new member to the database
@@ -54,6 +58,8 @@ export const getAllMembers = async (req, res) => {
   }
 };
 
+
+
 export const getSUCMembers = async (req, res) => {
   const { id } = req.body;
 
@@ -68,9 +74,29 @@ export const getSUCMembers = async (req, res) => {
       return res.status(404).json({ message: "No members found for this ID" });
     }
 
+    // Convert image to base64 if imagePath exists
+    const membersWithBase64Image = await Promise.all(
+      members.map(async (member) => {
+      let imageBase64 = null;
+      if (member.imagePath) {
+        try {
+        const fs = await import('fs/promises');
+        const imageBuffer = await fs.readFile(member.imagePath);
+        imageBase64 = imageBuffer.toString('base64');
+        } catch (err) {
+        imageBase64 = null;
+        }
+      }
+      return {
+        ...member.toObject(),
+        image: imageBase64,
+      };
+      })
+    );
+
     return res
       .status(200)
-      .json({ message: "Successfully Retrieved Data!", data: members });
+      .json({ message: "Successfully Retrieved Data!", data: membersWithBase64Image });
   } catch (error) {
     return res
       .status(500)
@@ -78,13 +104,20 @@ export const getSUCMembers = async (req, res) => {
   }
 };
 
+
 export const updateMemberProfile = async (req, res) => {
   const { _id, ...otherFields } = req.body;
+
+  const image = req.file ? req.file.path : null; // Get the file path from Multer (if present)
 
   try {
     const updateData = {
       ...otherFields,
     };
+
+    if (image) {
+      updateData.imagePath = image; // Update the image path if a new image is uploaded
+    }
 
     const updateItem = await Members.findByIdAndUpdate(_id, updateData, {
       new: true,
@@ -111,6 +144,8 @@ export const deleteMember = async (req, res) => {
 
     res.status(200).json({ message: "Member deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting member", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting member", error: error.message });
   }
 };

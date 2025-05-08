@@ -29,7 +29,12 @@ router.post(
 );
 router.put("/get-suc-member", authenticateToken, getSUCMembers);
 router.get("/get-all-member", getAllMembers);
-router.post("/member-update", authenticateToken, updateMemberProfile);
+router.post(
+  "/member-update",
+  authenticateToken,
+  upload.single("image"),
+  updateMemberProfile
+);
 router.post("/delete-member", authenticateToken, deleteMember);
 
 export default router;
